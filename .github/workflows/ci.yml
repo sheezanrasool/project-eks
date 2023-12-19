@@ -23,6 +23,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
+      issues: 'write'
 
     steps:
     - name: Checkout Repository
@@ -42,19 +43,26 @@ jobs:
       # working-directory: terraform/
       run: terraform plan -out=tfplan
     
+    - name: Generate token
+      id: generate_token
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_KEY }}
+    
     - name: Manual Approval
       if: always()
       uses: trstringer/manual-approval@v1
+      timeout-minutes: 5
       with:
-        secret: ${{ github.TOKEN }}
-        approvers: Sheezan
+        secret: ${{ steps.generate_token.outputs.token }}
+        approvers: sheezanrasool
         minimum-approvals: 1
         issue-title: "Deploying"
         issue-body: "Review the terraform plan, then approve or deny the deployment."
         exclude-workflow-initiator-as-approver: false
 
     - name: Terraform Apply
-      if: always()
       # working-directory: terraform/
       run: terraform apply tfplan
       env:
