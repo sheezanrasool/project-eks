@@ -23,6 +23,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
+      issues: 'write'
 
     steps:
     - name: Checkout Repository
@@ -42,12 +43,19 @@ jobs:
       # working-directory: terraform/
       run: terraform plan -out=tfplan
     
+    - name: Generate token
+      id: generate_token
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_KEY }}
+    
     - name: Manual Approval
       if: always()
       uses: trstringer/manual-approval@v1
       timeout-minutes: 5
       with:
-        secret: ${{ github.TOKEN }}
+        secret: ${{ steps.generate_token.outputs.token }}
         approvers: sheezanrasool
         minimum-approvals: 1
         issue-title: "Deploying"
