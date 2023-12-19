@@ -45,16 +45,18 @@ jobs:
     - name: Manual Approval
       if: always()
       uses: trstringer/manual-approval@v1
+      timeout-minutes: 5
       with:
         secret: ${{ github.TOKEN }}
-        approvers: Sheezan
+        approvers: sheezanrasool
         minimum-approvals: 1
         issue-title: "Deploying"
         issue-body: "Review the terraform plan, then approve or deny the deployment."
         exclude-workflow-initiator-as-approver: false
 
     - name: Terraform Apply
-      if: always()
+      if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'approval'
+
       # working-directory: terraform/
       run: terraform apply tfplan
       env:
