@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - main
+ 
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+    
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   terraform:
@@ -30,18 +41,17 @@ jobs:
     - name: Terraform Plan
       # working-directory: terraform/
       run: terraform plan -out=tfplan
-
-    - name: Create GitHub Release
-      id: create_release
-      run: echo "Creating Release"
     
     - name: Manual Approval
       if: always()
-      uses: JasonEtco/manual-approval@v1
+      uses: trstringer/manual-approval@v1
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        custom-id: my-approval-id
-        custom-msg: "Do you want to deploy this change?"
+        secret: ${{ github.TOKEN }}
+        approvers: Sheezan
+        minimum-approvals: 1
+        issue-title: "Deploying"
+        issue-body: "Review the terraform plan, then approve or deny the deployment."
+        exclude-workflow-initiator-as-approver: false
 
     - name: Terraform Apply
       if: always()
