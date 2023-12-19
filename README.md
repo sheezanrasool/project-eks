@@ -1,13 +1,19 @@
-# project-eks
 
-
-# Terraform EKS Cluster Deployment
+## Terraform EKS Cluster Deployment
 
 This repository contains Terraform code to deploy an Amazon EKS (Elastic Kubernetes Service) cluster on AWS. The infrastructure includes a VPC, public and private subnets, bastion hosts, and worker nodes in an autoscaling group.
 
 ## Modules
 
 ### VPC Module (`vpc`)
+
+The VPC module creates a Virtual Private Cloud with public and private subnets across multiple availability zones.
+
+```hcl
+module "vpc" {
+  source = "./vpc"
+}
+
 
 The VPC module creates a Virtual Private Cloud with public and private subnets across multiple availability zones.
 
