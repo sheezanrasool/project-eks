@@ -1,3 +1,7 @@
+
+![project-eks-Page-2 drawio](https://github.com/sheezanrasool/project-eks/assets/61121312/5c927b58-cd5f-428c-ab07-d58848e3aebd)
+
+
 ## Requirements
 
 | Name | Version |
