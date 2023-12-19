@@ -7,7 +7,11 @@ on:
 
 jobs:
   terraform:
+    name: Deploy EKS Cluster
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
     steps:
     - name: Checkout Repository
@@ -20,11 +24,11 @@ jobs:
         aws configure set region your-aws-region
 
     - name: Terraform Init
-      working-directory: terraform/
+      # working-directory: terraform/
       run: terraform init
 
     - name: Terraform Plan
-      working-directory: terraform/
+      # working-directory: terraform/
       run: terraform plan -out=tfplan
 
     - name: Create GitHub Release
@@ -41,7 +45,7 @@ jobs:
 
     - name: Terraform Apply
       if: always()
-      working-directory: terraform/
+      # working-directory: terraform/
       run: terraform apply tfplan
       env:
         TF_IN_AUTOMATION: "true"
