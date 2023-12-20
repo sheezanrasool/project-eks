@@ -13,7 +13,7 @@ terraform {
 
 provider "aws" {
   region  = "us-east-1"
-  profile = "terraform"
+  # profile = "terraform"
 }
 
 data "aws_eks_cluster_auth" "eks_auth" {
