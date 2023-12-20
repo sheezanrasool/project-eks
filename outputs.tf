@@ -18,7 +18,7 @@ output "sgid" {
 }
 
 output "bastion_publicIP" {
-    value = module.bastion.*.bastion_publicIP
+  value = module.bastion.*.bastion_publicIP
 }
 
 output "bastion_role_arn" {

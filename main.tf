@@ -1,56 +1,62 @@
+#Bastion Host Module
+# --------------------
+#This module creates an Amazon Virtual Private Cloud (VPC) with public and 
+#private subnets in two availability zones (AZs) in the `us-east-1` region.
+
 module "vpc" {
-  source = "./vpc"
+  source                = "./vpc"
+  vpc_cidr_block        = var.vpc_cidr_block
+  vpc_name              = var.vpc_name
+  internet_gateway_name = var.internet_gateway_name
+  public_subnets = var.public_subnets
+  private_subnets = var.private_subnets
+  
 }
+
+#Bastion Host Module
+# --------------------
+# This module deploys a bastion host, in two Public Subnets across
+# Availability Zones (AZs) us-east-1a and us-east-1b. The use of multiple subnets ensures
+# high availability and redundancy.
 
 module "bastion" {
   source              = "./BastionHost"
-  ec2_name            = ["bastion-nonprod-1a", "bastion-nonprod-1b"] #public subnets
+  ec2_name            = var.ec2_name
   count_ec2_instance  = 2
-  ami_id              = "ami-0759f51a90924c166"
-  instance_type       = "t2.micro"
+  ami_id              = var.ami_id
+  instance_type       = var.instance_type
   public_ip           = true
   user_data           = file("install_needful.sh")
   vpc_id              = module.vpc.vpc_id
   public_subnets      = module.vpc.public_subnet_ids
   private_subnets     = module.vpc.private_subnet_ids
-  volume_size         = 20
-  volume_type         = "gp3"
-  security_group_name = "bastion-sg"
+  bastion_role_name   = var.bastion_role_name
+  volume_size         = var.volume_size
+  volume_type         = var.volume_type
+  security_group_name = var.security_group_name
   sgtags = {
-    Name = "bastion-sg"
+    Name = var.security_group_name
+  depends_on = module.vpc
   }
 }
+
+# EKS Cluster Module
+# -------------------
+# This module provisions an Amazon Elastic Kubernetes Service (EKS) cluster in private
+# subnets across two Availability Zones (AZs). EKS is a fully managed Kubernetes service
+# that simplifies the deployment, management, and scaling of containerized applications using
+# Kubernetes.
 
 module "eks" {
-  source = "./eks"
-  subnet_ids =  module.vpc.private_subnet_ids
-  cluster_name            = "project-eks-cluster"
-  bastion_sg_id = module.bastion.sgid
-  vpc_id              = module.vpc.vpc_id
-  bastion_role_arn = module.bastion.bastion_role_arn
-  eks-cluster-autoscaler = "eks-cluster-autoscaler"
-  kms_grant = "eks"
-  common_tags = { Env : "POC", Owner : "Sheezan", Project : "Project-EKS"}
-  worker_tags = { Name : "Sheezan", "kubernetes.io/cluster/project-eks-cluster" : "owned" , "k8s.io/cluster-autoscaler/project-eks-cluster" : "owned" , "k8s.io/cluster-autoscaler/enabled": "true"}
-  node_groups = {
-    "NG-ONE" = {
-      subnets          = module.vpc.private_subnet_ids #private subnets
-      desired_capacity = 2
-      max_capacity     = 3
-      min_capacity     = 1
-      capacity_type    = "ON_DEMAND"
-      disk_size      = null
-    }
-    
-  }
-  user_arn = "arn:aws:iam::053146050864:user/sheezan" #user arn for kms key
+  source                 = "./eks"
+  subnet_ids             = module.vpc.private_subnet_ids
+  eks_cluster_version    = var.eks_cluster_version
+  cluster_name           = var.cluster_name
+  bastion_sg_id          = module.bastion.sgid
+  vpc_id                 = module.vpc.vpc_id
+  bastion_role_arn       = module.bastion.bastion_role_arn
+  eks-cluster-autoscaler = var.eks-cluster-autoscaler
+  worker-nodes-name      = var.worker-nodes-name
+  depends_on = [module.vpc, module.bastion]
 }
 
-data "aws_eks_cluster_auth" "eks" {
-  name = module.eks.eks_cluster_id
-  depends_on = [ module.bastion ]
-}
-data "aws_eks_cluster" "eks" {
-  name = module.eks.eks_cluster_id
-  depends_on = [module.bastion]
-}

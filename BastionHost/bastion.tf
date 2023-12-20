@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ec2_assume_role_bastion" {
-  name = "ec2_assume_role_bastion"
+  name = var.bastion_role_name
 
   assume_role_policy = <<EOF
 {
@@ -18,7 +18,7 @@ resource "aws_iam_role" "ec2_assume_role_bastion" {
 EOF
 
   tags = {
-      Name = "ec2_assume_role_bastion"
+      Name = var.bastion_role_name
   }
 }
 
@@ -63,16 +63,6 @@ resource "aws_iam_role_policy" "eks_ecr_access_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "SecretsManagerReadWrite" {
-  role       = aws_iam_role.ec2_assume_role_bastion.name
-  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
-}
-
-resource "aws_iam_role_policy_attachment" "IAMFullAccess" {
-  role       = aws_iam_role.ec2_assume_role_bastion.name
-  policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
-}
-
 resource "aws_iam_role_policy_attachment" "AmazonSSMFullAccess" {
   role       = aws_iam_role.ec2_assume_role_bastion.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
@@ -83,17 +73,15 @@ resource "aws_iam_role_policy_attachment" "AmazonSSMManagedInstanceCore" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-
-
 resource "aws_instance" "ec2" {
   count                       = var.count_ec2_instance 
   ami                         = var.ami_id
   instance_type               = var.instance_type
   associate_public_ip_address = var.public_ip
-  user_data = var.user_data #"${file("install_needful.sh")}"
+  user_data = var.user_data
   subnet_id                   =  var.public_subnets[count.index]
   vpc_security_group_ids      = [aws_security_group.securitygroup.id] #var.security_groups
-  iam_instance_profile        =  "${aws_iam_instance_profile.ec2_assume_role_profile.name}"#var.iam_instance_profile_required == true ? var.iam_instance_profile : null
+  iam_instance_profile        =  "${aws_iam_instance_profile.ec2_assume_role_profile.name}"
   root_block_device {
     volume_size = var.volume_size
     volume_type = var.volume_type
@@ -106,6 +94,5 @@ resource "aws_instance" "ec2" {
     {
       PROVISIONER = "Terraform"
     },
-    var.tags,
   )
 }

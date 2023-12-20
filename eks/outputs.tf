@@ -27,3 +27,8 @@ output "eks_security_group_id" {
 output "oidc_arn" {
   value = aws_iam_openid_connect_provider.eks.arn
 }
+
+# output "nodes-role-arn" {
+#   description = "Node Arn"
+#   value = aws_iam_role.project-eks-nodes-role.arn
+# }

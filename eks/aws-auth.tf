@@ -2,12 +2,6 @@ data "aws_eks_cluster_auth" "cluster_auth" {
   name = var.cluster_name
 }
 
-provider "kubernetes" {
-  host                   = aws_eks_cluster.project-eks-cluster.endpoint
-  cluster_ca_certificate = base64decode(aws_eks_cluster.project-eks-cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster_auth.token
-}
-
 
 resource "kubernetes_config_map" "aws_auth" {
   
@@ -54,7 +48,7 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
 locals {
   maproles = concat([
     {
-      rolearn  = "${aws_iam_role.project-eks-nodes.arn}"
+      rolearn  = "${aws_iam_role.project-eks-nodes-role.arn}"
       username = "system:node:{{EC2PrivateDNSName}}"
       groups   = ["system:bootstrappers", "system:nodes"]
     }],

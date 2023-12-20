@@ -2,7 +2,7 @@ resource "aws_eip" "nat1" {
   domain = "vpc"
 
   tags = {
-    Name = "nat1"
+    Name = "EIP-NAT1"
   }
 }
 
@@ -10,7 +10,7 @@ resource "aws_eip" "nat2" {
   domain = "vpc"
 
   tags = {
-    Name = "nat2"
+    Name = "EIP-NAT2"
   }
 }
 

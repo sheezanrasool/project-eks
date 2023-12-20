@@ -7,7 +7,7 @@ variable "count_ec2_instance" {
 variable "ec2_name" {
   description = "Name of bastion"
   type        = list
-  default     = ["bastion-nonprod-1a","bastion-nonprod-1b"]
+  default     = ["bastion-1a","bastion-1b"]
 }
 variable "public_ip" {
   description = "Public Ip "
@@ -15,13 +15,7 @@ variable "public_ip" {
   default     = true
 }
 
-variable "tags" {
-  description = "Additional tags"
-  type        = map(string)
-  default     = {
-    "Environment" = "Nonprod"
-  }
-}
+
 variable "subnet_ids" {
   type    = list(string)
   description = "Zones to launch our instances into"
@@ -44,11 +38,7 @@ variable "ami_id" {
   type        = string
   default     = "ami-0759f51a90924c166"
 }
-# variable "key_name" {
-#   description = "Key name of Launch configuration"
-#   type        = string
-#   default     = "bastion-nonprod"
-# }
+
 variable "instance_type" {
   description = "Name of Launch configuration"
   type        = string
@@ -135,4 +125,7 @@ variable "private_subnets" {
   type        = list(string)
   description = "Zones to launch our instances into"
   default     = [""]
+}
+
+variable "bastion_role_name" {
 }
