@@ -63,9 +63,19 @@ resource "aws_iam_role_policy" "eks_ecr_access_policy" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "IAMFullAccess" {
+  role       = aws_iam_role.ec2_assume_role_bastion.name
+  policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
+}
+
 resource "aws_iam_role_policy_attachment" "AmazonSSMFullAccess" {
   role       = aws_iam_role.ec2_assume_role_bastion.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "SecretsManagerReadWrite" {
+  role       = aws_iam_role.ec2_assume_role_bastion.name
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonSSMManagedInstanceCore" {

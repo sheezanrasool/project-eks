@@ -12,7 +12,6 @@ resource "kubernetes_config_map" "aws_auth" {
     namespace = "kube-system"
   }
 
-  #data = local.aws_auth_configmap_data
   data = {
     "mapRoles" = yamlencode(local.maproles)
   }
@@ -59,4 +58,10 @@ locals {
       groups   = ["system:masters"]
       }]
   )
+}
+
+provider "kubernetes" {
+  host                   = aws_eks_cluster.project-eks-cluster.endpoint
+  cluster_ca_certificate = base64decode(aws_eks_cluster.project-eks-cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster_auth.token
 }

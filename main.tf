@@ -35,7 +35,6 @@ module "bastion" {
   volume_size          = var.volume_size
   volume_type          = var.volume_type
   security_group_name  = var.security_group_name
-  depends_on           = [module.vpc]
   sgtags = {
     Name = var.security_group_name
   }
@@ -58,6 +57,19 @@ module "eks" {
   bastion_role_arn       = module.bastion.bastion_role_arn
   eks-cluster-autoscaler = var.eks-cluster-autoscaler
   worker-nodes-name      = var.worker-nodes-name
-  depends_on             = [module.vpc, module.bastion]
 }
 
+data "aws_eks_cluster_auth" "eks_auth" {
+  name = module.eks.eks_cluster_id
+  depends_on = [
+        module.eks,
+        module.bastion
+    ]
+}
+data "aws_eks_cluster" "eks_cluster" {
+  name = module.eks.eks_cluster_id
+  depends_on = [
+        module.eks,
+        module.bastion
+    ]
+}

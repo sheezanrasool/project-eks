@@ -194,5 +194,5 @@ variable "cluster_name" {
 }
 
 variable "eks_cluster_version" {
-  default = "1.24"
+  default = 1.24
 }

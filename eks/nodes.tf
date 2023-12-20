@@ -23,6 +23,8 @@ resource "aws_iam_role_policy_attachment" "nodes-AmazonEKS_CNI_Policy" {
   role       = aws_iam_role.project-eks-nodes-role.name
 }
 
+
+
 resource "aws_iam_role_policy_attachment" "nodes-AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.project-eks-nodes-role.name
