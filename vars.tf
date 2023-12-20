@@ -121,12 +121,9 @@ variable "iam_instance_profile_required" {
 
 variable "iam_instance_profile" {
   type    = string
-  default = "value"
+  default = "ec2_assume_role_profile"
 }
 
-variable "user_data" {
-
-}
 
 variable "security_group_name" {
   default = "bastion-sg"

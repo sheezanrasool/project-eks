@@ -8,9 +8,9 @@ module "vpc" {
   vpc_cidr_block        = var.vpc_cidr_block
   vpc_name              = var.vpc_name
   internet_gateway_name = var.internet_gateway_name
-  public_subnets = var.public_subnets
-  private_subnets = var.private_subnets
-  
+  public_subnets        = var.public_subnets
+  private_subnets       = var.private_subnets
+
 }
 
 #Bastion Host Module
@@ -20,23 +20,24 @@ module "vpc" {
 # high availability and redundancy.
 
 module "bastion" {
-  source              = "./BastionHost"
-  ec2_name            = var.ec2_name
-  count_ec2_instance  = 2
-  ami_id              = var.ami_id
-  instance_type       = var.instance_type
-  public_ip           = true
-  user_data           = file("install_needful.sh")
-  vpc_id              = module.vpc.vpc_id
-  public_subnets      = module.vpc.public_subnet_ids
-  private_subnets     = module.vpc.private_subnet_ids
-  bastion_role_name   = var.bastion_role_name
-  volume_size         = var.volume_size
-  volume_type         = var.volume_type
-  security_group_name = var.security_group_name
+  source               = "./BastionHost"
+  ec2_name             = var.ec2_name
+  count_ec2_instance   = 2
+  ami_id               = var.ami_id
+  instance_type        = var.instance_type
+  public_ip            = true
+  user_data            = file("install_needful.sh")
+  iam_instance_profile = var.iam_instance_profile
+  vpc_id               = module.vpc.vpc_id
+  public_subnets       = module.vpc.public_subnet_ids
+  private_subnets      = module.vpc.private_subnet_ids
+  bastion_role_name    = var.bastion_role_name
+  volume_size          = var.volume_size
+  volume_type          = var.volume_type
+  security_group_name  = var.security_group_name
+  depends_on           = [module.vpc]
   sgtags = {
     Name = var.security_group_name
-  depends_on = module.vpc
   }
 }
 
@@ -57,6 +58,6 @@ module "eks" {
   bastion_role_arn       = module.bastion.bastion_role_arn
   eks-cluster-autoscaler = var.eks-cluster-autoscaler
   worker-nodes-name      = var.worker-nodes-name
-  depends_on = [module.vpc, module.bastion]
+  depends_on             = [module.vpc, module.bastion]
 }
 
