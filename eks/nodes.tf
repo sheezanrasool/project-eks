@@ -61,12 +61,12 @@ resource "aws_eks_node_group" "project-eks-worker-nodes" {
   ]
 }
 
-resource "aws_security_group" "worker_sg" {
-  name        = "${aws_eks_cluster.project-eks-cluster.name}-worker-sg"
-  description = "Allow TLS inbound traffic"
-  vpc_id      = var.vpc_id
-  tags = {
-    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
-  }
-}
+# resource "aws_security_group" "worker_sg" {
+#   name        = "${aws_eks_cluster.project-eks-cluster.name}-worker-sg"
+#   description = "Allow TLS inbound traffic"
+#   vpc_id      = var.vpc_id
+#   tags = {
+#     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+#   }
+# }
 
