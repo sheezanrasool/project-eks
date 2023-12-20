@@ -1,4 +1,7 @@
-![Alt text](project-eks-Page-2.drawio.png)
+## Project - Deploy EKS Cluster with Terraform and Github Actions.
+
+![project-eks-Page-2 drawio](https://github.com/sheezanrasool/project-eks/assets/61121312/8f69d3d7-c79e-48e1-9d4a-06d941adbd0a)
+
 
 ## Requirements
 
